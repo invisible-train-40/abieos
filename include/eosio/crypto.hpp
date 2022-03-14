@@ -68,10 +68,10 @@ EOSIO_COMPARE(webauthn_public_key);
  *
  *  @ingroup public_key
  */
-using public_key = std::variant<ecc_public_key, ecc_public_key, webauthn_public_key>;
+using public_key = std::variant<ecc_public_key, ecc_public_key, webauthn_public_key, ecc_public_key>;
 
 using ecc_private_key = std::array<char, 32>;
-using private_key     = std::variant<ecc_private_key, ecc_private_key>;
+using private_key     = std::variant<ecc_private_key, ecc_private_key, ecc_private_key, ecc_private_key>;
 
 /**
  *  EOSIO ECC signature data
@@ -104,7 +104,32 @@ struct webauthn_signature {
 EOSIO_REFLECT(webauthn_signature, compact_signature, auth_data, client_json);
 EOSIO_COMPARE(webauthn_signature);
 
-using signature = std::variant<ecc_signature, ecc_signature, webauthn_signature>;
+
+/**
+ *  SM2 ECC signature data
+ *
+ *  Fixed size representation of a GM ECC compact signature
+
+ *  @ingroup signature
+ */
+struct sm2_signature {
+   /**
+    * The ECC signature data
+    */
+   ecc_signature compact_signature;
+
+   /**
+    * The ECC key material
+    */
+   ecc_public_key pub_key;
+}
+
+EOSIO_REFLECT(sm2_signature, compact_signature, pub_key);
+EOSIO_COMPARE(sm2_signature);
+
+
+
+using signature = std::variant<ecc_signature, ecc_signature, webauthn_signature, sm2_signature>;
 constexpr const char* get_type_name(public_key*) { return "public_key"; }
 constexpr const char* get_type_name(private_key*) { return "private_key"; }
 constexpr const char* get_type_name(signature*) { return "signature"; }
