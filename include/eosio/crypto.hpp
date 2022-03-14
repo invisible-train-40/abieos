@@ -81,6 +81,7 @@ using private_key     = std::variant<ecc_private_key, ecc_private_key, ecc_priva
  *  @ingroup signature
  */
 using ecc_signature = std::array<char, 65>;
+using sm2_signature_base = std::array<char, 72>;
 
 struct webauthn_signature {
    /**
@@ -112,21 +113,26 @@ EOSIO_COMPARE(webauthn_signature);
 
  *  @ingroup signature
  */
+/**
+ *  SM2 ECC signature data
+ *
+ *  Fixed size representation of a GM ECC compact signature
+
+ *  @ingroup signature
+ */
 struct sm2_signature {
-   /**
-    * The ECC signature data
-    */
-   ecc_signature compact_signature;
 
    /**
     * The ECC key material
     */
    ecc_public_key pub_key;
+   /**
+    * The ECC signature data
+    */
+   sm2_signature_base sm2_signature_asn1;
 }
-
-EOSIO_REFLECT(sm2_signature, compact_signature, pub_key);
+EOSIO_REFLECT(sm2_signature, pub_key, sm2_signature_asn1);
 EOSIO_COMPARE(sm2_signature);
-
 
 
 using signature = std::variant<ecc_signature, ecc_signature, webauthn_signature, sm2_signature>;
